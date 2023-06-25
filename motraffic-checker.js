@@ -57,7 +57,7 @@ async function run(){
 //    const d_res2 = await metric_record.deleteMany({"$and": [{timestamp: {"$lt": now }}, { "cpuUsage": {$exists : true } }] })
 //    console.log("Delete:" + d_res2.deletedCount);
 
-    metric_record.deleteMany({"$and": [{timestamp: {"$lt": now }}, { "cpuTemp": {$exists : true } }]} , (err, d_res) => {
+    metric_record.deleteMany({"$and": [{timestamp: {"$lt": now }}, { "moTraffic": {$exists : true } }]} , (err, d_res) => {
       if (err) throw err;
       console.log("Delete:" + d_res.deleteCount);
     })
