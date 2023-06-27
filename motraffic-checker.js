@@ -4,7 +4,7 @@ const {MongoClient} = require('mongodb');
 const DAY_S = 24 * 60 * 60;
 const DAY_MS = DAY_S * 1000;
 const HOUR_MS = 60 * 60 * 1000;
-const INTERVAL_S = 30 * 60;
+const INTERVAL_S = 60 * 60;
 const INTERVAL_MS = INTERVAL_S * 1000;
 
 const max_traffic = 5000000;
@@ -22,7 +22,7 @@ function sleep(ms) {
 
 async function getValue(a_timestamp){
   var record_hour = a_timestamp.getHours();
-  weighting = hourly_weighting[record_hour];
+  weighting = hourly_weighting[record_hour % 24];
 
   const ceiling = (max_traffic / 10) * weighting;
   var mo_traffic = min_traffic + Math.floor(Math.random() * ceiling);
@@ -50,9 +50,14 @@ async function run(){
     const d_res = await metric_record.deleteMany({"$and": [{timestamp: {"$lt": now }}, { "moTraffic": {$exists : true } }]} )
     console.log("Delete:" + d_res.deletedCount);
 
-    var yesterday = new Date(now - DAY_MS);
-    var date_record = yesterday;
-    console.log("Yesterday:" + yesterday)
+//    var yesterday = new Date(now - DAY_MS);
+//    var date_record = yesterday;
+//    console.log("Yesterday:" + yesterday)
+
+    var last_week = new Date(now - (DAY_MS * 7));
+    var date_record = last_week;
+    console.log("Last Week:" + last_week)
+
 
     while (date_record <= now){
 
