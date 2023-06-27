@@ -43,10 +43,12 @@ async function run(){
     const metric_record = database.collection(db_tools.COLLECTION_NAME);
     var now = new Date();
 
-    metric_record.deleteMany({"$and": [{timestamp: {"$lt": now }}, { "moTraffic": {$exists : true } }]} , (err, d_res) => {
-      if (err) throw err;
-      console.log("Delete:" + d_res.deleteCount);
-    })
+//    metric_record.deleteMany({"$and": [{timestamp: {"$lt": now }}, { "moTraffic": {$exists : true } }]} , (err, d_res) => {
+//      if (err) throw err;
+//      console.log("Delete:" + d_res.deleteCount);
+//    })
+    const d_res = await metric_record.deleteMany({"$and": [{timestamp: {"$lt": now }}, { "moTraffic": {$exists : true } }]} )
+    console.log("Delete:" + d_res.deletedCount);
 
     var yesterday = new Date(now - DAY_MS);
     var date_record = yesterday;
