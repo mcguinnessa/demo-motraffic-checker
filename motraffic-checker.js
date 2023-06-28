@@ -9,9 +9,16 @@ const INTERVAL_MS = INTERVAL_S * 1000;
 
 const max_traffic = 3000000;
 const min_traffic = 2000;
+const min_variance = -2;
+const max_variance = 2;
 
-//nst hourly_weighting = [1, 2, 3, 4, 5, 6, 7, 8, 9 10, 11, 12, 13, 14 ,15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
-const hourly_weighting = [1, 2, 1, 1, 1, 1, 2, 2, 5,  7,  8,  9, 10, 10, 10,  9,  7,  5,  5,  5,  5,  3,  2,  1]
+
+const weekday_weighting = [ 8, 6, 2, 1, 2, 16, 32, 36, 40, 35, 52, 62, 72, 64, 72, 73, 76, 79, 80, 77, 60, 52, 24, 16]
+const fri_weighting =     [10,  6, 2, 1, 3, 20, 40, 45, 50, 43, 64, 77, 90, 80, 90, 92, 95, 99, 100, 95, 96, 86, 83, 54]
+const sat_weighting =     [20, 12, 7, 1, 3, 20, 40, 45, 50, 43, 64, 77, 90, 80, 90, 92, 95, 99, 100, 95, 97, 87, 80, 60]
+const sun_weighting =     [20, 12, 7, 1, 3, 20, 40, 45, 50, 43, 64, 77, 90, 80, 90, 92, 80, 85, 87, 77, 60, 54, 23, 14]
+
+const weekly_weighting = [sun_weighting, weekday_weighting, weekday_weighting, weekday_weighting, weekday_weighting, fri_weighting, sat_weighting]
 
 
 function sleep(ms) {
@@ -21,13 +28,19 @@ function sleep(ms) {
 }
 
 async function getValue(a_timestamp){
+  var record_day = a_timestamp.getDay();
+  const day = weekly_weighting[record_day]
+
   var record_hour = a_timestamp.getHours();
-  weighting = hourly_weighting[record_hour % 24];
+  const weighting = day[record_hour];
 
-  const ceiling = (max_traffic / 10) * weighting;
-  var mo_traffic = min_traffic + Math.floor(Math.random() * ceiling);
+  const variance = (Math.random() * (max_variance - min_variance) + min_variance)
 
-  console.log("TIME:" + a_timestamp + " HOUR:" + record_hour + " WEIGHTING:" + weighting + " CEILING:" + ceiling + " MO Traffic:" + mo_traffic);
+  mo_traffic = min_traffic +(((max_traffic - min_traffic) / 100) * (weighting + variance));
+
+  if (mo_traffic < min_traffic){ mo_traffic = min_traffic}
+
+  console.log("TIME:" + a_timestamp + " DAY:" + record_day + " HOUR:" + record_hour + " WEIGHTING:" + weighting + " VARIANCE:" + variance + " MT Traffic:" + mo_traffic);
   return mo_traffic;
 }
 
